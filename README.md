@@ -6,7 +6,7 @@ The data is collected into a JSONObject and displayed as JSON on screen. It is s
 
 ## Play Store
 The app is free (and ad-free) on the Play Store: 
-https://play.google.com/store/apps/details?id=com.kaltura.kalturadeviceinfo
+https://play.google.com/store/apps/details?id=cinfo.ryanford.kalturadeviceinfo
 
 
 

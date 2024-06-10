@@ -4,7 +4,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.kaltura.kalturadeviceinfo"
+        applicationId "info.ryanford.kalturadeviceinfo"
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 18
@@ -34,17 +34,20 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    namespace 'com.kaltura.kalturadeviceinfo'
+    namespace 'info.ryanford.kalturadeviceinfo'
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
-    implementation 'com.google.android.material:material:1.1.0-alpha02'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.3'
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.11.3'
-    implementation 'com.google.android.exoplayer:exoplayer-hls:2.11.3'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.3'
-    implementation 'com.google.android.exoplayer:extension-okhttp:2.11.3'
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+
+    def exoplayerVersion = '2.11.8'
+    implementation "com.google.android.exoplayer:exoplayer-core:${exoplayerVersion}"
+    implementation "com.google.android.exoplayer:exoplayer-dash:${exoplayerVersion}"
+    implementation "com.google.android.exoplayer:exoplayer-hls:${exoplayerVersion}"
+    implementation "com.google.android.exoplayer:exoplayer-ui:${exoplayerVersion}"
+    implementation "com.google.android.exoplayer:extension-okhttp:${exoplayerVersion}"
 //    compile 'com.google.android.gms:play-services-safetynet:11.6.2'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.legacy:legacy-support-v4:1.0.0"
 }

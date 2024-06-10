@@ -1,7 +1,6 @@
-package com.kaltura.kalturadeviceinfo;
+package info.ryanford.kalturadeviceinfo;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.drm.DrmInfo;
 import android.drm.DrmInfoRequest;
@@ -11,16 +10,11 @@ import android.media.MediaCodecList;
 import android.media.MediaDrm;
 import android.media.UnsupportedSchemeException;
 import android.os.Build;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-//import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.common.api.Status;
-//import com.google.android.gms.safetynet.SafetyNet;
-//import com.google.android.gms.safetynet.SafetyNetApi;
+import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,10 +27,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
-
 
 /**
  * Created by noamt on 17/05/2016.
@@ -113,7 +107,7 @@ class Collector {
 
     private JSONObject meta() throws JSONException {
         TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         df.setTimeZone(tz);
         String nowAsISO = df.format(new Date());
         return new JSONObject()
@@ -178,7 +172,7 @@ class Collector {
 
     private JSONObject mediaCodecInfo(MediaCodecInfo mediaCodec) throws JSONException {
 
-        JSONObject codecInfo =  new JSONObject();
+        JSONObject codecInfo = new JSONObject();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             codecInfo.put("isVendor", mediaCodec.isVendor());
             codecInfo.put("isSoftwareOnly", mediaCodec.isSoftwareOnly());
@@ -193,16 +187,10 @@ class Collector {
 
         ArrayList<MediaCodecInfo> mediaCodecs = new ArrayList<>();
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            MediaCodecList mediaCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS);
-            MediaCodecInfo[] codecInfos = mediaCodecList.getCodecInfos();
+        MediaCodecList mediaCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS);
+        MediaCodecInfo[] codecInfos = mediaCodecList.getCodecInfos();
 
-            Collections.addAll(mediaCodecs, codecInfos);
-        } else {
-            for (int i=0, n=MediaCodecList.getCodecCount(); i<n; i++) {
-                mediaCodecs.add(MediaCodecList.getCodecInfoAt(i));
-            }
-        }
+        Collections.addAll(mediaCodecs, codecInfos);
 
         ArrayList<MediaCodecInfo> encoders = new ArrayList<>();
         ArrayList<MediaCodecInfo> decoders = new ArrayList<>();
@@ -222,17 +210,10 @@ class Collector {
         info.put("decoders", jsonDecoders);
 
         return info;
-
     }
 
     private JSONObject modularDrmInfo() throws JSONException {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            return new JSONObject()
-                    .put("widevine", widevineModularDrmInfo());
-        } else {
-            return null;
-        }
+        return new JSONObject().put("widevine", widevineModularDrmInfo());
     }
 
     private JSONObject widevineModularDrmInfo() throws JSONException {
@@ -286,7 +267,7 @@ class Collector {
             String value;
             try {
                 value = Base64.encodeToString(mediaDrm.getPropertyByteArray(prop), Base64.NO_WRAP);
-            } catch (IllegalStateException|NullPointerException e) {
+            } catch (IllegalStateException | NullPointerException e) {
                 value = "<unknown>";
             }
             props.put(prop, value);
@@ -334,8 +315,8 @@ class Collector {
     private JSONObject rootInfo() throws JSONException {
         JSONObject info = new JSONObject();
 
-        String[] paths = { "/system/app/Superuser.apk", "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
-                "/system/bin/failsafe/su", "/data/local/su" };
+        String[] paths = {"/system/app/Superuser.apk", "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
+                "/system/bin/failsafe/su", "/data/local/su"};
         JSONArray files = new JSONArray();
         for (String path : paths) {
             if (new File(path).exists()) {

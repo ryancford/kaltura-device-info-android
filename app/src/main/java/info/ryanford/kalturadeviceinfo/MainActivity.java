@@ -1,4 +1,4 @@
-package com.kaltura.kalturadeviceinfo;
+package info.ryanford.kalturadeviceinfo;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,17 +8,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.RequiresApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.content.FileProvider;
+import android.util.Base64;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Base64;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import androidx.core.content.FileProvider;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +27,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,17 +51,11 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         assert fab != null;
         fab.setOnClickListener(view -> showActionsDialog());
-
     }
 
     private void showActionsDialog() {
 
-        String[] actions;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            actions = new String[]{"Share...", "Refresh", "Test DRM Playback", "Provision Widevine"};
-        } else {
-            actions = new String[]{"Share...", "Refresh"};
-        }
+        String[] actions = new String[]{"Share...", "Refresh", "Test DRM Playback", "Provision Widevine"};
 
         new AlertDialog.Builder(this).setTitle("Select action").setItems(actions, (dialog, which) -> {
             switch (which) {
@@ -76,13 +69,11 @@ public class MainActivity extends AppCompatActivity {
                     testPlayback();
                     break;
                 case 3: // Provision
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                        new AlertDialog.Builder(MainActivity.this)
-                                .setPositiveButton("Yes", (dialog1, which1) -> startProvision())
-                                .setNegativeButton("No", null)
-                                .setMessage("Are you sure you want to attempt Widevine Provisioning?")
-                                .show();
-                    }
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setPositiveButton("Yes", (dialog1, which1) -> startProvision())
+                            .setNegativeButton("No", null)
+                            .setMessage("Are you sure you want to attempt Widevine Provisioning?")
+                            .show();
                     break;
             }
         }).show();
@@ -98,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void startProvision() {
         new ProvisionTask(this).execute();
     }
@@ -121,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("ERROR", "Error creating report file", e);
             return null;
         }
-        Uri fileUri = FileProvider.getUriForFile(MainActivity.this, "com.kaltura.kalturadeviceinfo.fileprovider", reportFile);
+        Uri fileUri = FileProvider.getUriForFile(MainActivity.this, "cinfo.ryanford.kalturadeviceinfo.fileprovider", reportFile);
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("application/json");
@@ -132,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         if (shareIntent.resolveActivity(packageManager) == null) {
             return null;
         }
-        
+
         return shareIntent;
     }
 
@@ -146,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class CollectorTask extends AsyncTask<Boolean, Void, String> {
-
         @Override
         protected String doInBackground(Boolean... params) {
             return Collector.getReport(MainActivity.this, params[0]);
@@ -177,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             this.context = context;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         protected String doInBackground(Context... contexts) {
             try {
@@ -197,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         private void provisionWidevine() throws Exception {
             MediaDrm mediaDrm = new MediaDrm(Collector.WIDEVINE_UUID);
             MediaDrm.ProvisionRequest provisionRequest = mediaDrm.getProvisionRequest();
@@ -223,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
             final byte[] response = baos.toByteArray();
             Log.d("RESULT", Base64.encodeToString(response, Base64.NO_WRAP));
             baos.close();
-            
+
             mediaDrm.provideProvisionResponse(response);
             mediaDrm.release();
         }

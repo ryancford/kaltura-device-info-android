@@ -1,4 +1,4 @@
-package com.kaltura.kalturadeviceinfo;
+package info.ryanford.kalturadeviceinfo;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -7,28 +7,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import androidx.core.app.NavUtils;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
+
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionEventListener;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
 import com.google.android.exoplayer2.drm.ExoMediaCrypto;
-import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -41,8 +37,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
@@ -139,7 +133,6 @@ public class PlayerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(view -> toggle());
 
@@ -164,7 +157,6 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }
     }
-
 
     private void log(String message) {
         try {
@@ -199,8 +191,6 @@ public class PlayerActivity extends AppCompatActivity {
                 return;
         }
 
-
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HHmmssZ", Locale.ROOT);
         String formattedDate = sdf.format(new Date());
 
@@ -223,7 +213,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDrmSessionManagerError(Exception error) {
+            public void onDrmSessionManagerError(@NonNull Exception error) {
                 log("onDrmSessionManagerError: " + error);
             }
 
@@ -248,11 +238,9 @@ public class PlayerActivity extends AppCompatActivity {
             }
         });
 
-
         player = new SimpleExoPlayer.Builder(this, new DefaultRenderersFactory(this))
                 .setTrackSelector(new DefaultTrackSelector(this)).build();
         mContentView.setPlayer(player);
-
 
         player.addListener(new Player.EventListener() {
             @Override
@@ -283,16 +271,15 @@ public class PlayerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlayerError(ExoPlaybackException error) {
+            public void onPlayerError(@NonNull ExoPlaybackException error) {
                 log("onPlayerError: " + error + "\n" + Log.getStackTraceString(error));
             }
 
             @Override
             public void onSeekProcessed() {
-                log("onSeekProcessed: " + player.getCurrentPosition()/1000f);
+                log("onSeekProcessed: " + player.getCurrentPosition() / 1000f);
             }
         });
-
 
         // Produces DataSource instances through which media data is loaded.
 
