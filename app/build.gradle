@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.kaltura.kalturadeviceinfo"
-        minSdkVersion 16
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode 18
         versionName "1.4.1"
     }
@@ -34,6 +34,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    namespace 'com.kaltura.kalturadeviceinfo'
 }
 
 dependencies {

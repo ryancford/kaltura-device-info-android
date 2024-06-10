@@ -235,7 +235,6 @@ class Collector {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private JSONObject widevineModularDrmInfo() throws JSONException {
         if (!MediaDrm.isCryptoSchemeSupported(WIDEVINE_UUID)) {
             return null;
@@ -316,11 +315,9 @@ class Collector {
 
     private JSONObject systemInfo() throws JSONException {
         JSONObject arch = new JSONObject().put("os.arch", System.getProperty("os.arch"));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            arch.put("SUPPORTED_ABIS", new JSONArray(Build.SUPPORTED_ABIS));
-            arch.put("SUPPORTED_32_BIT_ABIS", new JSONArray(Build.SUPPORTED_32_BIT_ABIS));
-            arch.put("SUPPORTED_64_BIT_ABIS", new JSONArray(Build.SUPPORTED_64_BIT_ABIS));
-        }
+        arch.put("SUPPORTED_ABIS", new JSONArray(Build.SUPPORTED_ABIS));
+        arch.put("SUPPORTED_32_BIT_ABIS", new JSONArray(Build.SUPPORTED_32_BIT_ABIS));
+        arch.put("SUPPORTED_64_BIT_ABIS", new JSONArray(Build.SUPPORTED_64_BIT_ABIS));
         return new JSONObject()
                 .put("RELEASE", Build.VERSION.RELEASE)
                 .put("SDK_INT", Build.VERSION.SDK_INT)
@@ -335,7 +332,6 @@ class Collector {
     }
 
     private JSONObject rootInfo() throws JSONException {
-
         JSONObject info = new JSONObject();
 
         String[] paths = { "/system/app/Superuser.apk", "/sbin/su", "/system/bin/su", "/system/xbin/su", "/data/local/xbin/su", "/data/local/bin/su", "/system/sd/xbin/su",
