@@ -17,7 +17,6 @@ android {
     }
 
     signingConfigs {
-
         release {
             if (System.getenv("KEYSTORE_KEY_ALIAS")) {
                 storeFile rootProject.file('release.jks')
@@ -34,7 +33,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
     namespace 'info.ryanford.kalturadeviceinfo'
+
+    buildFeatures {
+        buildConfig true
+    }
 }
 
 dependencies {
@@ -42,7 +46,7 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
     implementation 'com.google.android.material:material:1.12.0'
 
-    def exoplayerVersion = '2.15.1'
+    def exoplayerVersion = '2.16.1'
     implementation "com.google.android.exoplayer:exoplayer-core:${exoplayerVersion}"
     implementation "com.google.android.exoplayer:exoplayer-dash:${exoplayerVersion}"
     implementation "com.google.android.exoplayer:exoplayer-hls:${exoplayerVersion}"
