@@ -130,6 +130,15 @@ class Collector {
     private JSONObject classicDrmInfo() throws JSONException {
         JSONObject json = new JSONObject();
 
+        /* TODO: Replace DrmManagerClient with Mediadrm
+        MediaDrm mediaDrm;
+        try {
+            mediaDrm = new MediaDrm(WIDEVINE_UUID);
+        } catch (UnsupportedSchemeException e) {
+            throw new RuntimeException(e);
+        }
+         */
+
         DrmManagerClient drmManagerClient = new DrmManagerClient(mContext);
         String[] availableDrmEngines = drmManagerClient.getAvailableDrmEngines();
 
@@ -171,7 +180,6 @@ class Collector {
     }
 
     private JSONObject mediaCodecInfo(MediaCodecInfo mediaCodec) throws JSONException {
-
         JSONObject codecInfo = new JSONObject();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             codecInfo.put("isVendor", mediaCodec.isVendor());
@@ -182,9 +190,7 @@ class Collector {
         return codecInfo;
     }
 
-
     private JSONObject mediaCodecInfo() throws JSONException {
-
         ArrayList<MediaCodecInfo> mediaCodecs = new ArrayList<>();
 
         MediaCodecList mediaCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS);
@@ -247,7 +253,6 @@ class Collector {
         } catch (Exception e) {
             mediaDrmEvents.put(new JSONObject().put("Exception(openSession)", e.toString()));
         }
-
 
         String[] stringProps = {MediaDrm.PROPERTY_VENDOR, MediaDrm.PROPERTY_VERSION, MediaDrm.PROPERTY_DESCRIPTION, MediaDrm.PROPERTY_ALGORITHMS, "securityLevel", "systemId", "privacyMode", "sessionSharing", "usageReportingSupport", "appId", "origin", "hdcpLevel", "maxHdcpLevel", "maxNumberOfSessions", "numberOfOpenSessions"};
         String[] byteArrayProps = {MediaDrm.PROPERTY_DEVICE_UNIQUE_ID, "provisioningUniqueId", "serviceCertificate"};

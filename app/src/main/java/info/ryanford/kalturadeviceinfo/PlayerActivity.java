@@ -12,19 +12,21 @@ import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
 
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.drm.DefaultDrmSessionEventListener;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
-import com.google.android.exoplayer2.drm.ExoMediaCrypto;
+import com.google.android.exoplayer2.drm.DrmSessionEventListener;
 import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
+import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
@@ -166,8 +168,51 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
-    private void setupPlayer() throws com.google.android.exoplayer2.drm.UnsupportedDrmException, IOException {
+//    class LocalDrmSessionEventListener implements DrmSessionEventListener {
+//        @Override
+//        public void onDrmSessionAcquired(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId) {
+//            DrmSessionEventListener.super.onDrmSessionAcquired(windowIndex, mediaPeriodId);
+//
+//            log("onDrmSessionAcquired");
+//        }
+//
+//        @Override
+//        public void onDrmKeysLoaded(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId) {
+//            DrmSessionEventListener.super.onDrmKeysLoaded(windowIndex, mediaPeriodId);
+//
+//            log("onDrmKeysLoaded");
+//        }
+//
+//        @Override
+//        public void onDrmSessionManagerError(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId, Exception error) {
+//            DrmSessionEventListener.super.onDrmSessionManagerError(windowIndex, mediaPeriodId, error);
+//
+//            log("onDrmSessionManagerError: " + error);
+//        }
+//
+//        @Override
+//        public void onDrmKeysRestored(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId) {
+//            DrmSessionEventListener.super.onDrmKeysRestored(windowIndex, mediaPeriodId);
+//
+//            log("onDrmKeysRestored");
+//        }
+//
+//        @Override
+//        public void onDrmKeysRemoved(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId) {
+//            DrmSessionEventListener.super.onDrmKeysRemoved(windowIndex, mediaPeriodId);
+//
+//            log("onDrmKeysRemoved");
+//        }
+//
+//        @Override
+//        public void onDrmSessionReleased(int windowIndex, @Nullable MediaSource.MediaPeriodId mediaPeriodId) {
+//            DrmSessionEventListener.super.onDrmSessionReleased(windowIndex, mediaPeriodId);
+//
+//            log("onDrmSessionReleased");
+//        }
+//    }
 
+    private void setupPlayer() throws com.google.android.exoplayer2.drm.UnsupportedDrmException, IOException {
         final Intent intent = getIntent();
         final String dataString = intent.getDataString();
 
@@ -203,40 +248,11 @@ public class PlayerActivity extends AppCompatActivity {
 
         HttpDataSource.Factory httpDataSourceFactory = new DefaultHttpDataSourceFactory(userAgent);
 
-        final DefaultDrmSessionManager<ExoMediaCrypto> drmSessionManager =
+        final DefaultDrmSessionManager drmSessionManager =
                 new DefaultDrmSessionManager.Builder().build(new HttpMediaDrmCallback(licenseUrl, httpDataSourceFactory));
 
-        drmSessionManager.addListener(new Handler(Looper.getMainLooper()), new DefaultDrmSessionEventListener() {
-            @Override
-            public void onDrmKeysLoaded() {
-                log("onDrmKeysLoaded");
-            }
-
-            @Override
-            public void onDrmSessionManagerError(@NonNull Exception error) {
-                log("onDrmSessionManagerError: " + error);
-            }
-
-            @Override
-            public void onDrmKeysRestored() {
-                log("onDrmKeysRestored");
-            }
-
-            @Override
-            public void onDrmKeysRemoved() {
-                log("onDrmKeysRemoved");
-            }
-
-            @Override
-            public void onDrmSessionAcquired() {
-                log("onDrmSessionAcquired");
-            }
-
-            @Override
-            public void onDrmSessionReleased() {
-                log("onDrmSessionReleased");
-            }
-        });
+        // TODO implement session listener
+//        drmSessionManager.acquireSession(Looper.getMainLooper(), new LocalDrmSessionEventListener.EventDispatcher(), new Format.Builder().build());
 
         player = new SimpleExoPlayer.Builder(this, new DefaultRenderersFactory(this))
                 .setTrackSelector(new DefaultTrackSelector(this)).build();
@@ -286,7 +302,8 @@ public class PlayerActivity extends AppCompatActivity {
         Uri uri = Uri.parse(contentUrl);
         final DashMediaSource mediaSource = new DashMediaSource.Factory(new DefaultDashChunkSource.Factory(httpDataSourceFactory), httpDataSourceFactory).setDrmSessionManager(drmSessionManager).createMediaSource(uri);
 
-        player.prepare(mediaSource);
+        player.setMediaSource(mediaSource);
+        player.prepare();
         player.setPlayWhenReady(true);
     }
 
