@@ -20,6 +20,7 @@ import androidx.core.app.NavUtils;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager;
@@ -287,7 +288,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPlayerError(@NonNull ExoPlaybackException error) {
+            public void onPlayerError(@NonNull PlaybackException error) {
                 log("onPlayerError: " + error + "\n" + Log.getStackTraceString(error));
             }
 
